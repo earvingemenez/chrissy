@@ -80,7 +80,7 @@ class DynamicModelMixin(DatabaseMixin):
                 setattr(Meta, key, value)
 
         ## DEFINE APP LABEL
-        # we will set the machine app as the app_label.
+        # we will set the dynamic app as the app_label.
         # the app_label only serves as a placeholder of
         # our dynamic model to avoid conflict with django's
         # process
@@ -101,6 +101,20 @@ class DynamicModelMixin(DatabaseMixin):
         # triggers ModelBase processing.
         return type(model_name, (models.Model,), attrs)
 
+    def define_fields(self, fields):
+        """ Method that returns a dictionary of the
+            fields and their property.
+
+            NOTE: used only as an example because i'm lazy
+        """
+        dict_ = {}
+        for field in fields:
+            # Right now we will set all fields to be
+            # textfield since we want it to be flexible
+            dict_[field] = models.TextField(null=True, blank=True)
+
+        return dict_
+
     def remember_model(self, model_name, fields):
         """ Save the model info to a table.
             this will be used to retrieve the
@@ -114,7 +128,6 @@ class DynamicModelMixin(DatabaseMixin):
         
         return DynamicModel.objects.create(
             model_name=model_name, fields=fields_)
-
 
     def register_to_admin(self, model):
         """ Method that register the dynamic model
@@ -133,17 +146,3 @@ class DynamicModelMixin(DatabaseMixin):
         # register to admin panel
         admin.site.register(model, Admin)
 
-
-    def define_fields(self, fields):
-        """ Method that returns a dictionary of the
-            fields and their property.
-
-            NOTE: used only as an example because i'm lazy
-        """
-        dict_ = {}
-        for field in fields:
-            # Right now we will set all fields to be
-            # textfield since we want it to be flexible
-            dict_[field] = models.TextField(null=True, blank=True)
-
-        return dict_
